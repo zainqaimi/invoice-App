@@ -11,8 +11,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/api/AuthContext";
 import logo from "../../assets/images/TC-Logo.png";
-const { Title, Link } = Typography;
-import { AntDesignOutlined } from "@ant-design/icons";
+const { Title } = Typography;
 import { createStyles } from "antd-style";
 
 const useStyle = createStyles(({ prefixCls, css }) => ({
@@ -60,16 +59,12 @@ const Login: React.FC = () => {
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-500 to-indigo-600 p-4">
       <Card className="w-full max-w-md shadow-xl rounded-lg overflow-hidden">
-        {/* Logo Section */}
         <div className="flex justify-center mb-6">
           <img src={logo} alt="Logo" className="w-48 object-contain" />
         </div>
         <Title level={2} className="text-center mb-4">
           Sign In
         </Title>
-        {/* <Text type="secondary" className="block text-center mb-4">
-        Please enter your credentials to login.
-      </Text> */}
         <Form layout="vertical" onFinish={onFinish}>
           <Form.Item
             label="Email"
@@ -94,9 +89,6 @@ const Login: React.FC = () => {
               Forgot Password?
             </a>
           </div>
-          {/* <Button type="primary" htmlType="submit" className="w-full">
-            Login
-          </Button> */}
           <ConfigProvider
             button={{
               className: styles.linearGradientButton,
