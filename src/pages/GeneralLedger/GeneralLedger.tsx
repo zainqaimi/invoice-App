@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Table, Button, Modal } from "antd";
 import { EyeOutlined } from "@ant-design/icons";
-// import DateFilterModal from "./DateFilterModal";
+import DateFilterModal from "./DateFilterModal";
 
 // Define the type for each record in the data
 interface RecordType {
@@ -11,7 +11,7 @@ interface RecordType {
   city: string;
 }
 
-const Voucher = () => {
+const GeneralLedger = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState<RecordType | null>(null);
   const [filteredData, setFilteredData] = useState<RecordType[]>([]); // Define type here
@@ -30,19 +30,19 @@ const Voucher = () => {
     { title: "Business Name", dataIndex: "businessName", key: "businessName" },
     { title: "Customer Name", dataIndex: "customerName", key: "customerName" },
     { title: "City", dataIndex: "city", key: "city" },
-    // {
-    //   title: "Action",
-    //   key: "action",
-    //   render: (_, record) => (
-    //     <Button
-    //       icon={<EyeOutlined />}
-    //       onClick={() => {
-    //         setSelectedRecord(record);
-    //         setIsModalVisible(true);
-    //       }}
-    //     />
-    //   ),
-    // },
+    {
+      title: "Action",
+      key: "action",
+      render: (_, record) => (
+        <Button
+          icon={<EyeOutlined />}
+          onClick={() => {
+            setSelectedRecord(record);
+            setIsModalVisible(true);
+          }}
+        />
+      ),
+    },
   ];
 
   const handleDateFilter = (fromDate, toDate) => {
@@ -56,7 +56,7 @@ const Voucher = () => {
 
   return (
     <div className="p-4">
-      <h2 className="text-2xl font-bold mb-4">Voucher</h2>
+      <h2 className="text-2xl font-bold mb-4">General Ledger</h2>
       <div className="overflow-x-auto">
         <Table
           columns={columns}
@@ -65,14 +65,14 @@ const Voucher = () => {
           scroll={{ x: "max-content" }}
         />
       </div>
-      {/* <DateFilterModal
+      <DateFilterModal
         visible={isModalVisible}
         onClose={() => setIsModalVisible(false)}
         onFilter={handleDateFilter}
         record={selectedRecord}
-      /> */}
+      />
     </div>
   );
 };
 
-export default Voucher;
+export default GeneralLedger;
