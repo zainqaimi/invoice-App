@@ -1,3 +1,13 @@
+// import React from 'react'
+
+// const SalesOfficer = () => {
+//   return (
+//     <div>SalesOfficer</div>
+//   )
+// }
+
+// export default SalesOfficer
+
 import React, { useState } from "react";
 import {
   Table,
@@ -31,7 +41,7 @@ interface Discount {
   isActive: boolean;
 }
 
-const Discount: React.FC = () => {
+const SalesOfficer: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [form] = Form.useForm();
@@ -221,10 +231,10 @@ const Discount: React.FC = () => {
         </button>
       </div>
       <div className="md:flex md:space-y-0 space-y-4 justify-between items-center mb-4">
-        <h2 className="text-2xl font-bold">Discount's</h2>
+        <h2 className="text-2xl font-bold">Sales Officer's</h2>
         <div className="md:flex md:space-y-0 space-y-4 items-center gap-2">
           <Search
-            placeholder="Search discounts..."
+            placeholder="Search..."
             onChange={(e) => setSearchTerm(e.target.value)}
             className="md:w-60 shadow-md bg-white rounded-md"
           />
@@ -233,7 +243,7 @@ const Discount: React.FC = () => {
             onClick={showModal}
             className="flex items-center space-x-2 py-2 px-5 rounded-md shadow-md text-white bg-[#00a8ec] hover:bg-[#00a1ec] hover:shadow-none"
           >
-            <FaPlus /> <span>Add Discount</span>
+            <FaPlus /> <span>Add Sales Officer</span>
           </button>
         </div>
       </div>
@@ -292,4 +302,4 @@ const Discount: React.FC = () => {
   );
 };
 
-export default Discount;
+export default SalesOfficer;

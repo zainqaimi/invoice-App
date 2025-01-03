@@ -32,14 +32,15 @@ const ConfirmationBox: React.FC<ConfirmationBoxProps> = ({
         <Button
           key="confirm"
           onClick={onConfirm}
-          className="bg-blue-600 text-white hover:bg-blue-700"
+          className="bg-[#00a8ec] text-white hover:bg-[#2b84a7]"
         >
           Confirm
         </Button>,
       ]}
-      className="rounded-lg shadow-lg"
+      width={400}
+      className="rounded-lg text-left gap-3"
     >
-      <div className="text-center text-gray-700">{message}</div>
+      <div className="text-left text-gray-600">{message}</div>
     </Modal>
   );
 };

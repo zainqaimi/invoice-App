@@ -1,38 +1,3 @@
-// import React, { createContext, useState, ReactNode } from "react";
-// import { useNavigate } from "react-router-dom";
-
-// interface AuthContextType {
-//   user: boolean;
-//   login: () => void;
-//   logout: () => void;
-// }
-
-// export const AuthContext = createContext<AuthContextType>({
-//   user: false,
-//   login: () => {},
-//   logout: () => {},
-// });
-
-// export const AuthProvider = ({ children }: { children: ReactNode }) => {
-//   const [user, setUser] = useState<boolean>(false);
-//   const navigate = useNavigate();
-
-//   const login = () => {
-//     setUser(true);
-//   };
-
-//   const logout = () => {
-//     setUser(false);
-//     navigate("/login", { replace: true });
-//   };
-
-//   return (
-//     <AuthContext.Provider value={{ user, login, logout }}>
-//       {children}
-//     </AuthContext.Provider>
-//   );
-// };
-
 import React, { createContext, useState, ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -61,9 +26,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
       localStorage.setItem("user", "true");
       setUser(true);
 
-      // Browser history ko replace karte hain
       navigate("/", { replace: true });
-      window.history.pushState(null, "", "/"); // Clear history after login
+      window.history.pushState(null, "", "/");
     } else {
       alert("Invalid Credentials");
     }
@@ -73,7 +37,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     setUser(false);
     localStorage.removeItem("user");
     navigate("/login", { replace: true });
-    window.history.pushState(null, "", "/login"); // Clear history after logout
+    window.history.pushState(null, "", "/login");
   };
 
   return (

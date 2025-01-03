@@ -42,7 +42,7 @@ const SearchableDropdown: React.FC<SearchableDropdownProps> = ({
 
   return (
     <div className="relative w-full ">
-      {label && <label className="block text-sm font-medium">{label}</label>}
+      {label && <label className="block text-sm mb-1 font-medium">{label}</label>}
       <input
         type="text"
         value={searchTerm}

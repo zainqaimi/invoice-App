@@ -1,69 +1,431 @@
-import React from "react";
-import { useState } from "react";
-import { Input, Select, DatePicker, Switch, Button } from "antd";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Switch, Input, Select, Button } from "antd";
+import SearchableDropdown from "../../components/Buttons/DropdownMenu/SearchableDropdown";
+import { IoMdArrowRoundBack } from "react-icons/io";
+import { FaPlus } from "react-icons/fa";
 
+const { Option } = Select;
+const productOptions = [
+  "Apple iPhone 14",
+  "Samsung Galaxy S22",
+  "Dell Laptop",
+  "HP Laptop",
+  "Sony Headphones",
+  "Apple MacBook Air",
+  "Logitech Mouse",
+];
 const DebitProductEntry = () => {
-  const [paymentMode, setPaymentMode] = useState("Cash");
+  const [paymentType, setPaymentType] = useState<"cash" | "bank">("cash");
+  const [bankDetails, setBankDetails] = useState(false);
+  const [onlineCheckType, setOnlineCheckType] = useState<"online" | "check">("online");
+  const [rows, setRows] = useState([{}]);
 
+  const handlePaymentChange = (checked: boolean) => {
+    setPaymentType(checked ? "bank" : "cash");
+    setBankDetails(checked);
+  };
+
+  const handleOnlineCheckChange = (checked: boolean) => {
+    setOnlineCheckType(checked ? "check" : "online");
+  };
+
+  const handleProductSelect = (value: string) => {
+    console.log("Selected Product:", value);
+  };
+
+  const addRow = () => {
+    setRows([...rows, {}]);
+  };
+
+  const navigate = useNavigate();
+  const handleBack = () => {
+    navigate(-1); // Previous page par le jaata hai
+  };
   return (
-    <div className="p-4 bg-gray-50 min-h-screen">
-      <h2 className="text-xl font-bold mb-4">Product Entry</h2>
+//     <div className="p-4 bg-white space-y-4 rounded-md shadow-md">
+//        {/* Back Button */}
+//                  <div className="mb-4">
+//                    <button
+//                      onClick={handleBack}
+//                      className="flex items-center text-[#3bb0df] hover:text-[#40a6ce]"
+//                    >
+//                      <IoMdArrowRoundBack size={16} />
+//                      <span>Back</span>
+//                    </button>
+//                  </div>
+//       <h1 className="text-xl font-semibold mb-4">Product Entry</h1>
 
-      {/* Account Section */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-        <Select placeholder="Select Account Title" />
-        <Input placeholder="Amount" />
-      </div>
+//       {/* Account Section */}
+//       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+//       <div className="md:col-span-2">
+//           <SearchableDropdown
+//             label="Account Title:"
+//             placeholder="Search for a product..."
+//             options={productOptions}
+//             onSelect={handleProductSelect}
+//             className="w-full p-1 rounded-md focus:outline-none focus:border-b-[#3bb0df] border bg-white shadow-md "
+//           />
+//         </div>
+//         <div>
+//           <label className="block text-sm font-medium">
+//             {paymentType === "cash" ? "Cash Amount" : "Bank Amount"}:
+//           </label>
+//           <Input type="number" className="w-full shadow-md rounded-md" />
+//         </div>
+//       </div>
 
-      {/* Voucher Section */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-        <Input placeholder="Voucher Number" />
-        <DatePicker className="w-full" />
-        <Input placeholder="Invoice No." />
-      </div>
+//       {/* Voucher Section */}
+//       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 border border-slate-300 p-4 rounded-md shadow-md">
+//         <Input placeholder="Voucher Number" className="w-full shadow-md rounded-md" />
+//         <Input type="date" className="w-full shadow-md rounded-md" />
+//         <Input placeholder="Invoice No" className="w-full shadow-md rounded-md" />
+//         <Input placeholder="Demand Form No" className="w-full shadow-md rounded-md" />
+//         <Input placeholder="Gate Pass No" className="w-full shadow-md rounded-md" />
+//         <Input placeholder="Cash Book No" className="w-full shadow-md rounded-md" />
+//       </div>
 
-      {/* Sales Invoice */}
-      <h3 className="text-lg font-medium mt-4">Sales Invoice</h3>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-        <Input placeholder="Customer Name" />
-        <Input placeholder="City Name" />
-      </div>
+//       {/* Sales Invoice */}
+//       <h3 className="text-lg font-semibold mb-2">Sales Invoice</h3>
+//       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+//         <Input placeholder="Customer Name" className="w-full shadow-md rounded-md" />
+//         <Input placeholder="City Name" className="w-full shadow-md rounded-md" />
+//       </div>
 
-      {/* Table Rows for Items */}
-      <div className="mb-4 border rounded p-4 bg-white">
-        {/* Add table rows dynamically */}
-      </div>
+//       {/* Add Rows Section */}
+//       <div className="overflow-x-auto">
+//         <Button onClick={addRow} className="mb-2 bg-green-500 text-white px-4 py-2 shadow-md rounded-md hover:bg-green-600">
+//           + Add Row
+//         </Button>
+//         <table className="w-full border-collapse border mt-4">
+//           <thead>
+//             <tr className="bg-gray-200 text-sm">
+//               <th className="p-2 border">#</th>
+//               <th className="p-2 border">Item Name</th>
+//               <th className="p-2 border">Packing</th>
+//               <th className="p-2 border">Quantity</th>
+//               <th className="p-2 border">R.P</th>
+//               <th className="p-2 border">Discount</th>
+//               <th className="p-2 border">Amount</th>
+//             </tr>
+//           </thead>
+//           <tbody>
+//             {rows.map((_, index) => (
+//               <tr key={index}>
+//                 <td className="p-2 border">{index + 1}</td>
+//                 <td className="p-2 border">
+//                   <Select className="w-full shadow-md rounded-md" placeholder={'Select item'}>
+//                     <Option value="item1">Item 1</Option>
+//                     <Option value="item2">Item 2</Option>
+//                   </Select>
+//                 </td>
+//                 <td className="p-2 border"><Input className="w-full shadow-md rounded-md" /></td>
+//                 <td className="p-2 border"><Input type="number" className="w-full shadow-md rounded-md" /></td>
+//                 <td className="p-2 border"><Input type="number" className="w-full shadow-md rounded-md" /></td>
+//                 <td className="p-2 border"><Input type="number" className="w-full shadow-md rounded-md" /></td>
+//                 <td className="p-2 border"><Input type="number" className="w-full shadow-md rounded-md" /></td>
+//               </tr>
+//             ))}
+//           </tbody>
+//         </table>
+//       </div>
 
-      {/* Bank/Cash Switch */}
-      <div className="flex items-center gap-4 mb-4">
-        <span>Payment Mode:</span>
-        <Switch
-          checkedChildren="Bank"
-          unCheckedChildren="Cash"
-          onChange={(checked) => setPaymentMode(checked ? "Bank" : "Cash")}
+//       {/* Payment Type Switch */}
+//       <div className="flex items-center gap-4 mt-6">
+//         <span>Cash</span>
+//         <Switch
+//           checked={paymentType === "bank"}
+//           onChange={handlePaymentChange}
+//           className="peer"
+//         />
+//         <span>Bank</span>
+//       </div>
+
+//       {/* Bank Details */}
+//       {bankDetails && (
+//         <>
+//         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4">
+//           <Input placeholder="Bank Name" className="w-full shadow-md rounded-md" />
+//           <Input placeholder="Account Number" className="w-full shadow-md rounded-md" />
+//           <Input type="date" className="w-full shadow-md rounded-md" />
+//         </div>
+//          {/* Online/Check Switch */}
+//       <div className="flex items-center gap-4 mt-6">
+//         <span>Online</span>
+//         <Switch
+//           checked={onlineCheckType === "check"}
+//           onChange={handleOnlineCheckChange}
+//           className="peer"
+//         />
+//         <span>Check</span>
+//       </div>
+
+//       {/* Conditional Fields for Check/Online */}
+//       {onlineCheckType === "check" ? (
+//         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4">
+//           <Input placeholder="Cheque No" className="w-full shadow-md rounded-md" />
+//           <Input type="date" placeholder="Cheque Date" className="w-full shadow-md rounded-md" />
+//           <Input placeholder="Amount" type="number" className="w-full shadow-md rounded-md" />
+//         </div>
+//       ) : (
+//         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4">
+//           <Input placeholder="Slip No" className="w-full shadow-md rounded-md" />
+//           <Input type="date" placeholder="Slip Date" className="w-full shadow-md rounded-md" />
+//         </div>
+//       )}
+//         </>
+//       )}
+
+     
+// <div className="mt-8 text-right">
+//         <button className="bg-[#3bb0df] hover:bg-[#2a81a3] shadow-md text-white px-6 py-2.5 md:w-48 rounded-md">
+//           Save
+//         </button>
+//       </div>
+//     </div>
+<div className="p-4 bg-white rounded-md shadow-md space-y-6">
+{/* Back Button */}
+<div className="mb-4">
+  <button
+    onClick={handleBack}
+    className="flex items-center text-[#3bb0df] hover:text-[#40a6ce]"
+  >
+    <IoMdArrowRoundBack size={16} />
+    <span>Back</span>
+  </button>
+</div>
+<h1 className="text-xl font-bold mb-6">Product Entry</h1>
+
+{/* Account Section */}
+<div className="border p-4 shadow-md rounded-md mb-4">
+<div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+  <div className="md:col-span-2">
+    <SearchableDropdown
+      label="Account Title:"
+      placeholder="Search for a product..."
+      options={productOptions}
+      onSelect={handleProductSelect}
+      className="w-full p-2 rounded-md focus:outline-none focus:border-b-[#3bb0df] border bg-white shadow-md "
+    />
+  </div>
+  <div>
+    <label className="block text-sm mb-1 font-medium">
+      {/* {paymentType === "cash" ? "Cash Amount" : "Bank Amount"}: */}
+      <h1 className="block text-sm mb-1 font-medium">Amount</h1>
+    </label>
+    <Input type="number" className="p-2 w-full shadow-md rounded-md" />
+  </div>
+</div>
+</div>
+{/* Voucher Section */}
+<div className="border p-4 shadow-md rounded-md mb-4 space-y-4">
+<h3 className="text-lg font-semibold mb-2">Voucher</h3>
+
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <Input
+      placeholder="Voucher Number"
+      className="p-2 w-full shadow-md rounded-md"
+    />
+    <Input type="date" className="p-2 w-full shadow-md rounded-md" />
+  </div>
+  <div className="grid grid-cols-1 md:grid-cols-4 gap-4 ">
+    <Input
+      placeholder="Invoice No"
+      className="p-2 w-full shadow-md rounded-md"
+    />
+    <Input
+      placeholder="Demand Form No"
+      className="p-2 w-full shadow-md rounded-md"
+    />
+    <Input
+      placeholder="Gate Pass No"
+      className="p-2 w-full shadow-md rounded-md"
+    />
+    <Input
+      placeholder="Cash Book No"
+      className="p-2 w-full shadow-md rounded-md"
+    />
+  </div>
+</div>
+{/* Sales Invoice */}
+<div className="border p-4 shadow-md rounded-md mb-4">
+<h3 className="text-lg font-semibold mb-2">Sales Invoice</h3>
+<div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+  <Input
+    placeholder="Customer Name"
+    className="p-2 w-full shadow-md rounded-md"
+  />
+  <Input
+    placeholder="City Name"
+    className="p-2 w-full shadow-md rounded-md"
+  />
+          <Input
+    placeholder="Number"
+    className="p-2 w-full shadow-md rounded-md"
+  />
+</div>
+</div>
+{/* Add Rows Section */}
+<div className="overflow-x-auto">
+  <Button
+    onClick={addRow}
+    className="mt-2 bg-green-500 text-white flex items-center font-semibold p-4 shadow-md rounded-md hover:bg-green-600"
+  >
+    <FaPlus />
+    Add Row
+  </Button>
+  <table className="w-full border-collapse border mt-4">
+    <thead>
+      <tr className="bg-gray-200 text-sm">
+        <th className="p-2 border">#</th>
+        <th className="p-2 border">Product Name</th>
+        <th className="p-2 border">Weight Type</th>
+        <th className="p-2 border">Weight Quantity</th>
+        <th className="p-2 border">Packing Type</th>
+        <th className="p-2 border">Retail Price</th>
+        <th className="p-2 border">Discount</th>
+        <th className="p-2 border">Amount</th>
+      </tr>
+    </thead>
+    <tbody>
+      {rows.map((_, index) => (
+        <tr key={index}>
+          <td className="p-2 border">{index + 1}</td>
+          <td className="p-2 border">
+            <Select
+              className="w-full shadow-md rounded-md h-8 placeholder:p-2"
+              placeholder={"Select product"}
+            >
+              <Option value="item1">Item 1</Option>
+              <Option value="item2">Item 2</Option>
+            </Select>
+          </td>
+          <td className="p-2 border">
+            <Input className="w-full p-1.5 shadow-md rounded-md" />
+          </td>
+          <td className="p-2 border">
+            <Input
+              type="number"
+              className="w-full p-1.5 shadow-md rounded-md"
+            />
+          </td>
+          <td className="p-2 border">
+            <Input
+              type="number"
+              className="w-full p-1.5 shadow-md rounded-md"
+            />
+          </td>
+          <td className="p-2 border">
+            <Input
+              type="number"
+              className="w-full p-1.5 shadow-md rounded-md"
+            />
+          </td>
+          <td className="p-2 border">
+            <Input
+              type="number"
+              className="w-full p-1.5 shadow-md rounded-md"
+            />
+          </td>
+          <td className="p-2 border">
+            <Input
+              type="number"
+              className="w-full p-1.5 shadow-md rounded-md"
+            />
+          </td>
+        </tr>
+      ))}
+      <tr className="border p-2 ">
+        <td
+          className="p-2 border bg-gray-100  text-center font-semibold text-sm"
+          colSpan={7}
+        >
+          Total:
+        </td>
+        <td className="p-2 border">
+          <Input type="number" className="p-1.5 shadow-md rounded-md" />
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+{/* Payment Type Switch */}
+<div className="flex items-center gap-4 mt-6">
+  <span>Cash</span>
+  <Switch
+    checked={paymentType === "bank"}
+    onChange={handlePaymentChange}
+    className="peer"
+  />
+  <span>Bank</span>
+</div>
+
+{/* Bank Details */}
+{bankDetails && (
+  <>
+    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4">
+      <Input
+        placeholder="Bank Name"
+        className="w-full shadow-md rounded-md"
+      />
+      <Input
+        placeholder="Account Number"
+        className="w-full shadow-md rounded-md"
+      />
+      <Input type="date" className="w-full shadow-md rounded-md" />
+    </div>
+    {/* Online/Check Switch */}
+    <div className="flex items-center gap-4 mt-6">
+      <span>Online</span>
+      <Switch
+        checked={onlineCheckType === "check"}
+        onChange={handleOnlineCheckChange}
+        className="peer"
+      />
+      <span>Check</span>
+    </div>
+
+    {/* Conditional Fields for Check/Online */}
+    {onlineCheckType === "check" ? (
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4">
+        <Input
+          placeholder="Cheque No"
+          className="w-full shadow-md rounded-md"
+        />
+        <Input
+          type="date"
+          placeholder="Cheque Date"
+          className="w-full shadow-md rounded-md"
+        />
+        <Input
+          placeholder="Amount"
+          type="number"
+          className="w-full shadow-md rounded-md"
         />
       </div>
-
-      {/* Conditional Inputs */}
-      {paymentMode === "Bank" && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-          <Input placeholder="Bank Name" />
-          <DatePicker className="w-full" />
-          <Input placeholder="Account Number" />
-        </div>
-      )}
-
-      {/* Cheque Section */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-        <Input placeholder="Cheque Number" />
-        <DatePicker className="w-full" />
+    ) : (
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4">
+        <Input
+          placeholder="Slip No"
+          className="w-full shadow-md rounded-md"
+        />
+        <Input
+          type="date"
+          placeholder="Slip Date"
+          className="w-full shadow-md rounded-md"
+        />
       </div>
+    )}
+  </>
+)}
 
-      {/* Submit Button */}
-      <Button type="primary" className="mt-4">
-        Save
-      </Button>
-    </div>
+<div className="mt-8 text-right">
+  <button className="bg-[#3bb0df] hover:bg-[#2a81a3] shadow-md hover:shadow-none text-white px-6 py-2.5 md:w-48 rounded-md">
+    Save
+  </button>
+</div>
+</div>
   );
 };
 
