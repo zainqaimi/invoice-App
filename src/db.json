@@ -1,0 +1,12 @@
+{
+    "products": [
+      { "id": 1, "name": "Laptop", "price": 1000, "stock": 10 }
+    ],
+    "users": [
+      { "id": 1, "name": "Ali", "email": "ali@example.com" }
+    ],
+    "ledger": [
+      { "id": 1, "date": "2024-01-01", "description": "Opening Balance", "amount": 500 }
+    ]
+  }
+  
