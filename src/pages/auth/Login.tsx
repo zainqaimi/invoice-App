@@ -6,8 +6,8 @@ import {
   Typography,
 } from "antd";
 import { useNavigate } from "react-router-dom";
-import { AuthContext } from "../../context/api/AuthContext";
 import logo from "../../assets/images/TC-Logo.png";
+import { AuthContext } from "../../context/AuthContext";
 const { Title } = Typography;
 
 

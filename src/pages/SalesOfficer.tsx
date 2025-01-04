@@ -1,13 +1,3 @@
-// import React from 'react'
-
-// const SalesOfficer = () => {
-//   return (
-//     <div>SalesOfficer</div>
-//   )
-// }
-
-// export default SalesOfficer
-
 import React, { useState } from "react";
 import {
   Table,

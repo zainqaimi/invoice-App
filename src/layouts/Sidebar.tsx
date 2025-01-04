@@ -12,7 +12,7 @@ import { LeftOutlined, RightOutlined } from "@ant-design/icons";
 import { RiDiscountPercentFill } from "react-icons/ri";
 import { GrCluster, GrUserAdmin } from "react-icons/gr";
 import { useLocation, useNavigate } from "react-router-dom";
-import { AuthContext } from "../context/api/AuthContext";
+import { AuthContext } from "../context/AuthContext";
 
 interface SidebarProps {
   collapsed: boolean;
