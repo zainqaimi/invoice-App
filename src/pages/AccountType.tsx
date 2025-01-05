@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   Table,
   Button,
@@ -280,8 +280,8 @@ const AccountType: React.FC = () => {
         <div className="md:flex md:space-y-0 space-y-4 items-center gap-2">
           <Search
             placeholder="Search product"
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="md:w-60 shadow-md bg-white rounded-md"
+  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
+className="md:w-60 shadow-md bg-white rounded-md"
           />
           <button
             type="button"

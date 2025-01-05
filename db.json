@@ -1,21 +1,51 @@
 {
-    "products": [
-      { "id": 1, "name": "Laptop", "price": 1000, "stock": 10 }
-    ],
-    "users": [
-      { "id": 1, "name": "Ali", "email": "ali@example.com" }
-    ],
-    "ledger": [
-      { "id": 1, "date": "2024-01-01", "description": "Opening Balance", "amount": 500 }
-    ],
-    "salesOfficr": [
-      { "id": 1, "product_id": 1, "user_id": 1, "quantity": 2, "total": 2000 }
-    ],
-    "accounts": [
-      { "id": 1, "product_id": 1, "quantity": 8 }
-    ],
-    "accountTypes": [
-      { "id": 1, "product_id": 1, "quantity": 2 }
-    ]
-  }
-  
+  "products": [
+    {
+      "id": "81b1",
+      "productName": "ABCDE",
+      "weightType": "Savings",
+      "weightQuantity": "10 LITER",
+      "packingType": "Current",
+      "retailPrice": "4352",
+      "isActive": true
+    }
+  ],
+  "users": [
+    {
+      "id": 1,
+      "name": "Ali",
+      "email": "ali@example.com"
+    }
+  ],
+  "ledger": [
+    {
+      "id": 1,
+      "date": "2024-01-01",
+      "description": "Opening Balance",
+      "amount": 500
+    }
+  ],
+  "salesOfficr": [
+    {
+      "id": 1,
+      "product_id": 1,
+      "user_id": 1,
+      "quantity": 2,
+      "total": 2000
+    }
+  ],
+  "accounts": [
+    {
+      "id": 1,
+      "product_id": 1,
+      "quantity": 8
+    }
+  ],
+  "accountTypes": [
+    {
+      "id": 1,
+      "product_id": 1,
+      "quantity": 2
+    }
+  ]
+}
