@@ -8,18 +8,62 @@
       "packingType": "Current",
       "retailPrice": "4352",
       "isActive": true
+    },
+    {
+      "id": "e844",
+      "productName": "ads",
+      "weightType": "Savings",
+      "weightQuantity": "32",
+      "packingType": "Current",
+      "retailPrice": "9786",
+      "isActive": true
+    },
+    {
+      "id": "c47a",
+      "productName": "zayn",
+      "weightType": "12 litter",
+      "weightQuantity": "214",
+      "packingType": "Current",
+      "retailPrice": "976",
+      "isActive": true
+    },
+    {
+      "id": "4e85",
+      "productName": "zayn",
+      "weightType": "12 litter",
+      "weightQuantity": "214",
+      "packingType": "Current",
+      "retailPrice": "976",
+      "isActive": true
+    },
+    {
+      "id": "4909",
+      "productName": "zayn",
+      "weightType": "12 litter",
+      "weightQuantity": "214",
+      "packingType": "Current",
+      "retailPrice": "976",
+      "isActive": true
+    },
+    {
+      "id": "e771",
+      "productName": "ABCDE",
+      "weightType": "12 litter",
+      "weightQuantity": "24",
+      "packingType": "Current",
+      "retailPrice": "533"
     }
   ],
   "users": [
     {
-      "id": 1,
+      "id": "1",
       "name": "Ali",
       "email": "ali@example.com"
     }
   ],
   "ledger": [
     {
-      "id": 1,
+      "id": "1",
       "date": "2024-01-01",
       "description": "Opening Balance",
       "amount": 500
@@ -27,7 +71,7 @@
   ],
   "salesOfficr": [
     {
-      "id": 1,
+      "id": "1",
       "product_id": 1,
       "user_id": 1,
       "quantity": 2,
@@ -36,14 +80,14 @@
   ],
   "accounts": [
     {
-      "id": 1,
+      "id": "1",
       "product_id": 1,
       "quantity": 8
     }
   ],
   "accountTypes": [
     {
-      "id": 1,
+      "id": "1",
       "product_id": 1,
       "quantity": 2
     }

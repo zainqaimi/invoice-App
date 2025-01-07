@@ -13,7 +13,7 @@ import {
   Switch,
 } from "antd";
 import {
-  EditOutlined,
+  
   SortAscendingOutlined,
   SortDescendingOutlined,
 } from "@ant-design/icons";
@@ -335,10 +335,7 @@ className="md:w-60 shadow-md bg-white rounded-md"
       >
         <Form form={form} layout="vertical">
           <Form.Item name="accountType" label="Account Type" rules={[{ required: true }]}>
-            <Select placeholder="Select Account Type" className="shadow-md rounded-md h-10" >
-              <Option value="Savings">Savings</Option>
-              <Option value="Current">Current</Option>
-            </Select>
+            <Input placeholder="Enter Account Type" className="shadow-md p-2" />  
           </Form.Item>
           <Form.Item name="isActive" label="Is Active" valuePropName="checked" >
             <Switch className="shadow-md" />

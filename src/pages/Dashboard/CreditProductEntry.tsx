@@ -213,7 +213,7 @@ const CreditProductEntry = () => {
       </div>
 
       {/* Payment Type Switch */}
-      <div className="flex items-center gap-4 mt-6">
+      {/* <div className="flex items-center gap-4 mt-6">
         <span>Cash</span>
         <Switch
           checked={paymentType === "bank"}
@@ -221,7 +221,18 @@ const CreditProductEntry = () => {
           className="peer"
         />
         <span>Bank</span>
-      </div>
+      </div> */}
+               {/* Payment Options Bank/Cash Switch */}
+               <div className="flex items-center gap-4 my-4">
+              <span className="text-md font-semibold">Payment Mode:</span>
+              <Switch
+                checkedChildren="Bank"
+                unCheckedChildren="Cash"
+                onChange={handlePaymentChange}
+                // onChange={(checked) => setPaymentMode(checked ? "Bank" : "Cash")}
+
+              />
+            </div>
 
       {/* Bank Details */}
       {bankDetails && (
