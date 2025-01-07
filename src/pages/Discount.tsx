@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   Table,
   Button,
@@ -13,21 +13,27 @@ import {
   Switch,
 } from "antd";
 import {
-  EditOutlined,
   SortAscendingOutlined,
   SortDescendingOutlined,
 } from "@ant-design/icons";
-import { useNavigate } from "react-router-dom";
 import { FaPlus, FaTrash } from "react-icons/fa";
 import { RiEditLine } from "react-icons/ri";
 import { IoMdArrowRoundBack } from "react-icons/io";
+import { useQuery, useMutation, useQueryClient } from "react-query";
+import {
+  fetchdiscounts,
+  adddiscounts,
+  updatediscounts,
+  deletediscounts,
+} from "../api/discountsApi";
+import { useNavigate } from "react-router-dom";
 
 const { Search } = Input;
 const { Option } = Select;
 
-interface Discount {
-  key: number;
-  discountType: string;
+interface discounts {
+  id: number;
+  discounts: string;
   isActive: boolean;
 }
 
@@ -35,25 +41,22 @@ const Discount: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [form] = Form.useForm();
-
-  const [data, setData] = useState<Discount[]>([
-    { key: 1, discountType: "12%", isActive: true },
-    { key: 2, discountType: "15%", isActive: false },
-    { key: 3, discountType: "18%", isActive: true },
-  ]);
-
-  const [searchTerm, setSearchTerm] = useState("");
   const [editingKey, setEditingKey] = useState<number | null>(null);
-  const [sortOrder, setSortOrder] = useState<"ascend" | "descend" | null>(null);
-  const [sortColumn, setSortColumn] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [sortColumn, setSortColumn] = useState<string | undefined>(undefined);
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc" | undefined>(
+    undefined
+  );
 
+  const queryClient = useQueryClient();
   const navigate = useNavigate();
+  const { data: discounts = [], isLoading: isFetching } = useQuery(
+    ["discounts", searchTerm, sortColumn, sortOrder],
+    () => fetchdiscounts({ searchTerm, sortColumn, sortOrder })
+  );
 
-  // 🟦 Modal Handlers
-  const showModal = () => {
-    setIsModalOpen(true);
-  };
-
+  // Modal Handlers
+  const showModal = () => setIsModalOpen(true);
   const handleCancel = () => {
     form.resetFields();
     setIsModalOpen(false);
@@ -64,82 +67,62 @@ const Discount: React.FC = () => {
     try {
       setIsLoading(true);
       const values = await form.validateFields();
-
+      
+      if (values.discounts && !values.discounts.includes('%')) {
+        values.discounts = `${values.discounts}%`;
+      }
+  
       if (editingKey !== null) {
-        // Edit existing discount
-        setData((prevData) =>
-          prevData.map((item) =>
-            item.key === editingKey ? { ...item, ...values } : item
-          )
-        );
+        await updatediscounts({ id: editingKey, ...values });
         message.success("Discount updated successfully!");
       } else {
-        // Add new discount
-        setData((prevData) => [
-          ...prevData,
-          { ...values, key: prevData.length + 1 },
-        ]);
+        await adddiscounts(values);
         message.success("Discount added successfully!");
       }
-
       setIsLoading(false);
-      form.resetFields();
       setIsModalOpen(false);
       setEditingKey(null);
+      form.resetFields();
+  
+      queryClient.invalidateQueries("discounts");
     } catch (error) {
       setIsLoading(false);
-      message.error("Failed to save Discount!");
+      message.error("Failed to save discount!");
     }
   };
-
-  const handleEdit = (record: Discount) => {
-    setEditingKey(record.key);
+  
+  const handleEdit = (record: discounts) => {
+    setEditingKey(record.id);
     form.setFieldsValue(record);
     setIsModalOpen(true);
   };
 
-  const handleDelete = (key: number) => {
-    setData((prevData) => prevData.filter((item) => item.key !== key));
-    message.success("Discount deleted successfully!");
+  const handleDelete = async (id: number) => {
+    await deletediscounts(id);
+    message.success("discounts deleted successfully!");
+    queryClient.invalidateQueries("discounts");
   };
 
-  // 🟦 Sorting Handler
+  // Sorting Handler
   const handleSort = (column: string) => {
     const newOrder =
-      sortColumn === column && sortOrder === "ascend" ? "descend" : "ascend";
+      sortColumn === column && sortOrder === "asc" ? "desc" : "asc";
     setSortColumn(column);
     setSortOrder(newOrder);
-
-    const sortedData = [...data].sort((a, b) => {
-      if (newOrder === "ascend") {
-        return a[column as keyof Discount] > b[column as keyof Discount]
-          ? 1
-          : -1;
-      } else {
-        return a[column as keyof Discount] < b[column as keyof Discount]
-          ? 1
-          : -1;
-      }
-    });
-
-    setData(sortedData);
+    queryClient.invalidateQueries("discounts");
   };
 
-  // 🟦 Search Filter
-  const filteredData = data.filter((item) =>
-    item.discountType.toLowerCase().includes(searchTerm.toLowerCase())
-  );
 
   const columns = [
     {
       title: (
         <div
-          onClick={() => handleSort("discountType")}
+          onClick={() => handleSort("discounts")}
           className="flex items-center justify-between cursor-pointer"
         >
-          Discount Type
-          {sortColumn === "discountType" ? (
-            sortOrder === "ascend" ? (
+          Discount
+          {sortColumn === "discounts" ? (
+            sortOrder === "asc" ? (
               <SortAscendingOutlined />
             ) : (
               <SortDescendingOutlined />
@@ -149,8 +132,8 @@ const Discount: React.FC = () => {
           )}
         </div>
       ),
-      dataIndex: "discountType",
-      key: "discountType",
+      dataIndex: "discounts",
+      key: "discounts",
     },
     {
       title: (
@@ -160,7 +143,7 @@ const Discount: React.FC = () => {
         >
           Is Active
           {sortColumn === "isActive" ? (
-            sortOrder === "ascend" ? (
+            sortOrder === "asc" ? (
               <SortAscendingOutlined />
             ) : (
               <SortDescendingOutlined />
@@ -185,7 +168,7 @@ const Discount: React.FC = () => {
     {
       title: "Actions",
       key: "actions",
-      render: (record: Discount) => (
+      render: (record: discounts) => (
         <Space>
           <RiEditLine
             color="#00a8ec"
@@ -195,7 +178,7 @@ const Discount: React.FC = () => {
           />
           <Popconfirm
             title="Are you sure?"
-            onConfirm={() => handleDelete(record.key)}
+            onConfirm={() => handleDelete(record.id)}
           >
             <FaTrash
               color="red"
@@ -207,7 +190,6 @@ const Discount: React.FC = () => {
       ),
     },
   ];
-
   return (
     <div className="p-4 bg-gray-50 shadow-sm min-h-screen">
       {/* Back Button */}
@@ -224,8 +206,10 @@ const Discount: React.FC = () => {
         <h2 className="text-2xl font-bold">Discount's</h2>
         <div className="md:flex md:space-y-0 space-y-4 items-center gap-2">
           <Search
-            placeholder="Search discounts..."
-            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="Search discounts"
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setSearchTerm(e.target.value)
+            }
             className="md:w-60 shadow-md bg-white rounded-md"
           />
           <button
@@ -237,21 +221,21 @@ const Discount: React.FC = () => {
           </button>
         </div>
       </div>
-
-      {/* Table */}
       <div className="overflow-auto  p-4 bg-white rounded-md shadow-md">
         <Table
           columns={columns}
-          dataSource={filteredData}
+          dataSource={discounts}
+          loading={isFetching}
           rowKey="key"
           pagination={{
             pageSize: 5,
             showTotal: (total) => `Total ${total} items`,
           }}
+          className="text-center items-center"
         />
       </div>
-      {/* Modal */}
-      <Modal
+       {/* Modal */}
+   <Modal
         title={
           <span className="text-xl font-semibold mb-8">
             {editingKey !== null ? "Edit Discount" : "Add Discount"}
@@ -279,12 +263,12 @@ const Discount: React.FC = () => {
           </Button>,
         ]}
       >
-        <Form form={form} layout="vertical">
-          <Form.Item name="discountType" label="Discount Type" rules={[{ required: true }]}>
-            <Input placeholder="Enter Discount" />
+        <Form form={form} layout="vertical" onSubmitCapture={handleSave}>
+          <Form.Item name="discounts" label="Discount" rules={[{ required: true }]}>
+            <Input placeholder="Enter discount" className="p-2" />
           </Form.Item>
           <Form.Item name="isActive" label="Is Active" valuePropName="checked">
-            <Switch />
+            <Switch  className="shadow-md"/>
           </Form.Item>
         </Form>
       </Modal>

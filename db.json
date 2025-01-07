@@ -20,7 +20,7 @@
     },
     {
       "id": "4e85",
-      "productName": "zayn",
+      "productName": "zayni",
       "weightType": "12 litter",
       "weightQuantity": "214",
       "packingType": "Current",
@@ -35,52 +35,60 @@
       "packingType": "Current",
       "retailPrice": "976",
       "isActive": true
+    }
+  ],
+  "users": [],
+  "ledger": [],
+  "salesOfficer": [
+    {
+      "id": "0a5c",
+      "SalesOfficer": "waqas",
+      "isActive": true
     },
     {
-      "id": "e771",
-      "productName": "ABCDE",
-      "weightType": "12 litter",
-      "weightQuantity": "24",
-      "packingType": "Current",
-      "retailPrice": "533"
-    }
-  ],
-  "users": [
+      "id": "d5da",
+      "SalesOfficer": "Raju",
+      "isActive": true
+    },
     {
-      "id": "1",
-      "name": "Ali",
-      "email": "ali@example.com"
+      "id": "0c4d",
+      "SalesOfficer": "Abu bakr",
+      "isActive": false
     }
   ],
-  "ledger": [
-    {
-      "id": "1",
-      "date": "2024-01-01",
-      "description": "Opening Balance",
-      "amount": 500
-    }
-  ],
-  "salesOfficr": [
-    {
-      "id": "1",
-      "product_id": 1,
-      "user_id": 1,
-      "quantity": 2,
-      "total": 2000
-    }
-  ],
-  "accounts": [
-    {
-      "id": "1",
-      "product_id": 1,
-      "quantity": 8
-    }
-  ],
+  "accounts": [],
   "accountTypes": [
     {
-      "id": "1",
-      "product_id": 1,
-      "quantity": 2
+      "id": "af8e",
+      "accountTypes": "walk-In",
+      "isActive": true
+    },
+    {
+      "id": "1088",
+      "accountTypes": "Sales",
+      "isActive": true
+    },
+    {
+      "id": "1b6e",
+      "accountTypes": "Grower",
+      "isActive": true
+    }
+  ],
+  "discounts": [
+    {
+      "id": "9716",
+      "discounts": "23%",
+      "isActive": true
+    },
+    {
+      "id": "1722",
+      "discounts": "12%",
+      "isActive": true
+    },
+    {
+      "id": "bbf6",
+      "discounts": "26%",
+      "isActive": true
     }
   ]
 }

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   Table,
   Button,
@@ -13,21 +13,27 @@ import {
   Switch,
 } from "antd";
 import {
-  EditOutlined,
   SortAscendingOutlined,
   SortDescendingOutlined,
 } from "@ant-design/icons";
-import { useNavigate } from "react-router-dom";
 import { FaPlus, FaTrash } from "react-icons/fa";
 import { RiEditLine } from "react-icons/ri";
 import { IoMdArrowRoundBack } from "react-icons/io";
+import { useQuery, useMutation, useQueryClient } from "react-query";
+import {
+  fetchSalesOfficer,
+  addsalesOfficer,
+  updatesalesOfficer,
+  deletesalesOfficer,
+} from "../api/salesOffiers";
+import { useNavigate } from "react-router-dom";
 
 const { Search } = Input;
 const { Option } = Select;
 
-interface Discount {
-  key: number;
-  discountType: string;
+interface SalesOfficer {
+  id: number;
+  SalesOfficer: string;
   isActive: boolean;
 }
 
@@ -35,25 +41,22 @@ const SalesOfficer: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [form] = Form.useForm();
-
-  const [data, setData] = useState<Discount[]>([
-    { key: 1, discountType: "12%", isActive: true },
-    { key: 2, discountType: "15%", isActive: false },
-    { key: 3, discountType: "18%", isActive: true },
-  ]);
-
-  const [searchTerm, setSearchTerm] = useState("");
   const [editingKey, setEditingKey] = useState<number | null>(null);
-  const [sortOrder, setSortOrder] = useState<"ascend" | "descend" | null>(null);
-  const [sortColumn, setSortColumn] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [sortColumn, setSortColumn] = useState<string | undefined>(undefined);
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc" | undefined>(
+    undefined
+  );
 
+  const queryClient = useQueryClient();
   const navigate = useNavigate();
+  const { data: SalesOfficer = [], isLoading: isFetching } = useQuery(
+    ["SalesOfficer", searchTerm, sortColumn, sortOrder],
+    () => fetchSalesOfficer({ searchTerm, sortColumn, sortOrder })
+  );
 
-  // 🟦 Modal Handlers
-  const showModal = () => {
-    setIsModalOpen(true);
-  };
-
+  // Modal Handlers
+  const showModal = () => setIsModalOpen(true);
   const handleCancel = () => {
     form.resetFields();
     setIsModalOpen(false);
@@ -64,82 +67,57 @@ const SalesOfficer: React.FC = () => {
     try {
       setIsLoading(true);
       const values = await form.validateFields();
-
       if (editingKey !== null) {
-        // Edit existing discount
-        setData((prevData) =>
-          prevData.map((item) =>
-            item.key === editingKey ? { ...item, ...values } : item
-          )
-        );
-        message.success("Discount updated successfully!");
+        await updatesalesOfficer({ id: editingKey, ...values });
+        message.success("SalesOfficer updated successfully!");
       } else {
-        // Add new discount
-        setData((prevData) => [
-          ...prevData,
-          { ...values, key: prevData.length + 1 },
-        ]);
-        message.success("Discount added successfully!");
+        await addsalesOfficer(values);
+        message.success("SalesOfficer added successfully!");
       }
-
       setIsLoading(false);
-      form.resetFields();
       setIsModalOpen(false);
       setEditingKey(null);
+      form.resetFields();
+
+      queryClient.invalidateQueries("SalesOfficer");
     } catch (error) {
       setIsLoading(false);
-      message.error("Failed to save Discount!");
+      message.error("Failed to save SalesOfficer!");
     }
   };
 
-  const handleEdit = (record: Discount) => {
-    setEditingKey(record.key);
+  const handleEdit = (record: SalesOfficer) => {
+    setEditingKey(record.id);
     form.setFieldsValue(record);
     setIsModalOpen(true);
   };
 
-  const handleDelete = (key: number) => {
-    setData((prevData) => prevData.filter((item) => item.key !== key));
-    message.success("Discount deleted successfully!");
+  const handleDelete = async (id: number) => {
+    await deletesalesOfficer(id);
+    message.success("SalesOfficer deleted successfully!");
+    queryClient.invalidateQueries("SalesOfficer");
   };
 
-  // 🟦 Sorting Handler
+  // Sorting Handler
   const handleSort = (column: string) => {
     const newOrder =
-      sortColumn === column && sortOrder === "ascend" ? "descend" : "ascend";
+      sortColumn === column && sortOrder === "asc" ? "desc" : "asc";
     setSortColumn(column);
     setSortOrder(newOrder);
-
-    const sortedData = [...data].sort((a, b) => {
-      if (newOrder === "ascend") {
-        return a[column as keyof Discount] > b[column as keyof Discount]
-          ? 1
-          : -1;
-      } else {
-        return a[column as keyof Discount] < b[column as keyof Discount]
-          ? 1
-          : -1;
-      }
-    });
-
-    setData(sortedData);
+    queryClient.invalidateQueries("SalesOfficer");
   };
 
-  // 🟦 Search Filter
-  const filteredData = data.filter((item) =>
-    item.discountType.toLowerCase().includes(searchTerm.toLowerCase())
-  );
 
   const columns = [
     {
       title: (
         <div
-          onClick={() => handleSort("discountType")}
+          onClick={() => handleSort("SalesOfficer")}
           className="flex items-center justify-between cursor-pointer"
         >
-          Discount Type
-          {sortColumn === "discountType" ? (
-            sortOrder === "ascend" ? (
+          Sales Officer
+          {sortColumn === "SalesOfficer" ? (
+            sortOrder === "asc" ? (
               <SortAscendingOutlined />
             ) : (
               <SortDescendingOutlined />
@@ -149,8 +127,8 @@ const SalesOfficer: React.FC = () => {
           )}
         </div>
       ),
-      dataIndex: "discountType",
-      key: "discountType",
+      dataIndex: "SalesOfficer",
+      key: "SalesOfficer",
     },
     {
       title: (
@@ -160,7 +138,7 @@ const SalesOfficer: React.FC = () => {
         >
           Is Active
           {sortColumn === "isActive" ? (
-            sortOrder === "ascend" ? (
+            sortOrder === "asc" ? (
               <SortAscendingOutlined />
             ) : (
               <SortDescendingOutlined />
@@ -185,7 +163,7 @@ const SalesOfficer: React.FC = () => {
     {
       title: "Actions",
       key: "actions",
-      render: (record: Discount) => (
+      render: (record: SalesOfficer) => (
         <Space>
           <RiEditLine
             color="#00a8ec"
@@ -195,7 +173,7 @@ const SalesOfficer: React.FC = () => {
           />
           <Popconfirm
             title="Are you sure?"
-            onConfirm={() => handleDelete(record.key)}
+            onConfirm={() => handleDelete(record.id)}
           >
             <FaTrash
               color="red"
@@ -207,7 +185,6 @@ const SalesOfficer: React.FC = () => {
       ),
     },
   ];
-
   return (
     <div className="p-4 bg-gray-50 shadow-sm min-h-screen">
       {/* Back Button */}
@@ -221,11 +198,13 @@ const SalesOfficer: React.FC = () => {
         </button>
       </div>
       <div className="md:flex md:space-y-0 space-y-4 justify-between items-center mb-4">
-        <h2 className="text-2xl font-bold">Sales Officer's</h2>
+        <h2 className="text-2xl font-bold">SalesOfficer</h2>
         <div className="md:flex md:space-y-0 space-y-4 items-center gap-2">
           <Search
-            placeholder="Search..."
-            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="Search SalesOfficer"
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setSearchTerm(e.target.value)
+            }
             className="md:w-60 shadow-md bg-white rounded-md"
           />
           <button
@@ -237,24 +216,24 @@ const SalesOfficer: React.FC = () => {
           </button>
         </div>
       </div>
-
-      {/* Table */}
       <div className="overflow-auto  p-4 bg-white rounded-md shadow-md">
         <Table
           columns={columns}
-          dataSource={filteredData}
+          dataSource={SalesOfficer}
+          loading={isFetching}
           rowKey="key"
           pagination={{
             pageSize: 5,
             showTotal: (total) => `Total ${total} items`,
           }}
+          className="text-center items-center"
         />
       </div>
-      {/* Modal */}
-      <Modal
+       {/* Modal */}
+   <Modal
         title={
           <span className="text-xl font-semibold mb-8">
-            {editingKey !== null ? "Edit Discount" : "Add Discount"}
+            {editingKey !== null ? "Edit Sales Officer" : "Add Sales Officer"}
           </span>
         }
         className="font-semibold text-lg "
@@ -280,11 +259,11 @@ const SalesOfficer: React.FC = () => {
         ]}
       >
         <Form form={form} layout="vertical">
-          <Form.Item name="discountType" label="Discount Type" rules={[{ required: true }]}>
-            <Input placeholder="Enter Discount" />
+          <Form.Item name="SalesOfficer" label="Sales Officer" rules={[{ required: true }]}>
+            <Input placeholder="Enter Sales Officer" className="p-2" />
           </Form.Item>
           <Form.Item name="isActive" label="Is Active" valuePropName="checked">
-            <Switch />
+            <Switch  className="shadow-md"/>
           </Form.Item>
         </Form>
       </Modal>

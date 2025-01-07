@@ -13,9 +13,6 @@ import {
   Switch,
 } from "antd";
 import {
-  DeleteColumnOutlined,
-  EditFilled,
-  EditOutlined,
   SortAscendingOutlined,
   SortDescendingOutlined,
 } from "@ant-design/icons";
