@@ -2,7 +2,7 @@ import axios from "axios";
 // json-server --watch db.json --port 5000
 const API_URL = "http://localhost:5000/accounts";
 
-export const fetchaccounts = async (params: { searchTerm: string; sortColumn: string | undefined; sortOrder: "asc" | "desc" | undefined }) => {
+export const fetchAccounts = async (params: { searchTerm: string; sortColumn: string | undefined; sortOrder: "asc" | "desc" | undefined }) => {
   try {
     const response = await axios.get(API_URL, { params });
     return response.data;
@@ -13,19 +13,19 @@ export const fetchaccounts = async (params: { searchTerm: string; sortColumn: st
 };
 
 // Add accounts
-export const addaccounts = async (accounts: any) => {
+export const addAccounts = async (accounts: any) => {
   const response = await axios.post(API_URL, accounts);
   return response.data;
 };
 
 // Update accounts
-export const updateaccounts = async (accounts: any) => {
+export const updateAccounts = async (accounts: any) => {
   const response = await axios.put(`${API_URL}/${accounts.id}`, accounts);
   return response.data;
 };
 
 // Delete accounts
-export const deleteaccounts = async (id: number) => {
+export const deleteAccounts = async (id: number) => {
   const response = await axios.delete(`${API_URL}/${id}`);
   return response.data;
 };

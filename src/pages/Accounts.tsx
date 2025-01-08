@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Table,
   Button,
@@ -20,13 +20,24 @@ import { useNavigate } from "react-router-dom";
 import { FaPlus, FaTrash } from "react-icons/fa";
 import { IoMdArrowRoundBack } from "react-icons/io";
 import { RiEditLine } from "react-icons/ri";
-
+import {
+  fetchAccounts,
+  addAccounts,
+  updateAccounts,
+  deleteAccounts,
+} from "../api/accounts";
+import { useQuery, useQueryClient } from "react-query";
+import SearchableDropdown from "../components/Buttons/DropdownMenu/SearchableDropdown";
+import { fetchdiscounts } from "../api/discountsApi";
+import { fetchaccountTypes } from "../api/accountTypes";
+import { fetchSalesOfficer } from "../api/salesOffiers";
+import { keyframes } from "antd-style";
 const { Search } = Input;
 const { Option } = Select;
 
-interface Product {
-  key: number;
-  productName: string;
+interface Account {
+  id: number;
+  AccountName: string;
   businessName: string;
   contactNo: string;
   city: string;
@@ -40,157 +51,151 @@ const Accounts: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [form] = Form.useForm();
-
+  const [searchTerm, setSearchTerm] = useState("");
+  const [sortColumn, setSortColumn] = useState<string | undefined>(undefined);
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc" | undefined>(
+    undefined
+  );
+  const [discount, setDiscount] = useState<string[]>([]);
+  const [accountType, setAccountType] = useState<string[]>([]);
+  const [tsos, setTsos] = useState<string[]>([]);
+  const [loading, setLoading] = useState(false);
   const [trashModalOpen, setTrashModalOpen] = useState(false);
+
+  // discounts fetching
+  const { data: discounts = [] } = useQuery(
+    ["discounts", searchTerm, sortColumn, sortOrder],
+    () => fetchdiscounts({ searchTerm, sortColumn, sortOrder })
+  );
+  const discountValues = discounts.map(
+    (item: { discounts: string }) => item.discounts
+  );
+  // account types are fetching
+  const { data: accountTypes = [] } = useQuery(
+    ["accountTypes", searchTerm, sortColumn, sortOrder],
+    () => fetchaccountTypes({ searchTerm, sortColumn, sortOrder })
+  );
+  const accountTypesValues = accountTypes.map(
+    (item: { accountTypes: string }) => item.accountTypes
+  );
+  // TSo Fetching data
+  const { data: SalesOfficer = [] } = useQuery(
+    ["SalesOfficer", searchTerm, sortColumn, sortOrder],
+    () => fetchSalesOfficer({ searchTerm, sortColumn, sortOrder })
+  );
+  const SalesOfficerValues = SalesOfficer.map(
+    (item: { SalesOfficer: string }) => item.SalesOfficer
+  );
+
+  useEffect(() => {
+    // Fetching data for the dropdowns (replace with your actual fetch logic)
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        // Sample JSON data for dropdown options
+        // const discountData = discountValues;
+        const accountTypeData = accountTypesValues;
+        const tsoData = SalesOfficerValues;
+
+        // setDiscount(discountData);
+        setAccountType(accountTypeData);
+        setTsos(tsoData);
+      } catch (error) {
+        console.error("Error fetching data: ", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const queryClient = useQueryClient();
+ 
+  const { data: Accounts = [], isLoading: isFetching } = useQuery(
+    ["Accounts", searchTerm, sortColumn, sortOrder],
+    () => fetchAccounts({ searchTerm, sortColumn, sortOrder })
+  );
+  const handleSave = async () => {
+    try {
+      setIsLoading(true);
+      const values = await form.validateFields();
+      const accountData = {
+        ...values,
+        discount: values.discount || "",
+        accountType: values.accountType || "",
+        tso: values.tso || "",
+      };
+
+      if (editingKey !== null) {
+        await updateAccounts({ id: editingKey, ...accountData });
+        message.success("Account updated successfully!");
+      } else {
+        await addAccounts(accountData);
+        message.success("Account added successfully!");
+      }
+
+      setIsModalOpen(false);
+      setEditingKey(null);
+      form.resetFields();
+      queryClient.invalidateQueries("Accounts");
+    } catch (error) {
+      message.error("Failed to save Account!");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleEdit = (record: Account) => {
+    setEditingKey(record.id);
+    form.setFieldsValue(record);
+    setIsModalOpen(true);
+  };
+
+  const handleDelete = async (id: number) => {
+    await deleteAccounts(id);
+    message.success("Account deleted successfully!");
+    queryClient.invalidateQueries("Accounts");
+  };
 
   const showDltModal = () => {
     setTrashModalOpen(true);
   };
 
-  const [data, setData] = useState<Product[]>([
-    {
-      key: 1,
-      productName: "Product A",
-      businessName: "Business A",
-      contactNo: "1234567890",
-      city: "City A",
-      tso: "TSO A",
-      discount: "10%",
-      accountType: "Savings",
-      isActive: true,
-    },
-    {
-      key: 2,
-      productName: "Product B",
-      businessName: "Business B",
-      contactNo: "0987654321",
-      city: "City B",
-      tso: "TSO B",
-      discount: "15%",
-      accountType: "Current",
-      isActive: false,
-    },
-    {
-      key: 3,
-      productName: "Product A",
-      businessName: "Business A",
-      contactNo: "1234567890",
-      city: "City A",
-      tso: "TSO A",
-      discount: "10%",
-      accountType: "Savings",
-      isActive: true,
-    },
-    {
-      key: 4,
-      productName: "Product B",
-      businessName: "Business B",
-      contactNo: "0987654321",
-      city: "City B",
-      tso: "TSO B",
-      discount: "15%",
-      accountType: "Current",
-      isActive: false,
-    },
-    {
-      key: 5,
-      productName: "Product B",
-      businessName: "Business B",
-      contactNo: "0987654321",
-      city: "City B",
-      tso: "TSO B",
-      discount: "15%",
-      accountType: "Current",
-      isActive: false,
-    },
-    {
-      key: 6,
-      productName: "Product B",
-      businessName: "Business B",
-      contactNo: "0987654321",
-      city: "City B",
-      tso: "TSO B",
-      discount: "15%",
-      accountType: "Current",
-      isActive: false,
-    },
-  ]);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [data, setData] = useState<Account[]>([]);
+  // const [searchTerm, setSearchTerm] = useState("");
   const [editingKey, setEditingKey] = useState<number | null>(null);
 
-  const [sortOrder, setSortOrder] = useState<"ascend" | "descend" | null>(null);
-  const [sortColumn, setSortColumn] = useState<string | null>(null);
+  // const [sortOrder, setSortOrder] = useState<"ascend" | "descend" | null>(null);
+  // const [sortColumn, setSortColumn] = useState<string | null>(null);
 
   // Modal Handlers
   const showModal = () => setIsModalOpen(true);
-  const handleCancel = () => {
-    form.resetFields();
-    setIsModalOpen(false);
-    setEditingKey(null);
-  };
-
-  const handleSave = async () => {
-    try {
-      setIsLoading(true);
-      const values = await form.validateFields();
-
-      if (editingKey !== null) {
-        setData((prevData) =>
-          prevData.map((item) =>
-            item.key === editingKey ? { ...item, ...values } : item
-          )
-        );
-        message.success("Product updated successfully!");
-      } else {
-        setData((prevData) => [
-          ...prevData,
-          { ...values, key: prevData.length + 1 },
-        ]);
-        message.success("Product added successfully!");
-      }
-
-      setIsLoading(false);
-      form.resetFields();
-      setIsModalOpen(false);
-      setEditingKey(null);
-    } catch (error) {
-      setIsLoading(false);
-      message.error("Failed to save product!");
-    }
-  };
-
-  const handleEdit = (record: Product) => {
-    setEditingKey(record.key);
-    form.setFieldsValue(record);
-    setIsModalOpen(true);
-  };
-
-  const handleDelete = (key: number) => {
-    setData((prevData) => prevData.filter((item) => item.key !== key));
-    message.success("Product deleted successfully!");
-  };
 
   // Sorting Handler
+  // const handleSort = (column: string) => {
+  //   const newOrder =
+  //     sortColumn === column && sortOrder === "asc" ? "desc" : "asc";
+  //   setSortColumn(column);
+  //   setSortOrder(newOrder);
+
+  //   const sortedData = [...data].sort((a, b) => {
+  //     if (newOrder === "asc") {
+  //       return a[column as keyof Account] > b[column as keyof Account] ? 1 : -1;
+  //     } else {
+  //       return a[column as keyof Account] < b[column as keyof Account] ? 1 : -1;
+  //     }
+  //   });
+
+  //   setData(sortedData);
+  // };
   const handleSort = (column: string) => {
-    const newOrder =
-      sortColumn === column && sortOrder === "ascend" ? "descend" : "ascend";
     setSortColumn(column);
-    setSortOrder(newOrder);
-
-    const sortedData = [...data].sort((a, b) => {
-      if (newOrder === "ascend") {
-        return a[column as keyof Product] > b[column as keyof Product] ? 1 : -1;
-      } else {
-        return a[column as keyof Product] < b[column as keyof Product] ? 1 : -1;
-      }
-    });
-
-    setData(sortedData);
+    setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"));
   };
-
   const filteredData = data.filter(
     (item) =>
-      item.productName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.AccountName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       item.businessName.toLowerCase().includes(searchTerm.toLowerCase())
   );
   const columns = [
@@ -202,7 +207,7 @@ const Accounts: React.FC = () => {
         >
           Account Name
           {sortColumn === "accountName" ? (
-            sortOrder === "ascend" ? (
+            sortOrder === "asc" ? (
               <SortAscendingOutlined />
             ) : (
               <SortDescendingOutlined />
@@ -212,8 +217,8 @@ const Accounts: React.FC = () => {
           )}
         </div>
       ),
-      dataIndex: "productName",
-      key: "productName",
+      dataIndex: "AccountName",
+      key: "AccountName",
     },
     {
       title: (
@@ -223,7 +228,7 @@ const Accounts: React.FC = () => {
         >
           Business Name
           {sortColumn === "businessName" ? (
-            sortOrder === "ascend" ? (
+            sortOrder === "asc" ? (
               <SortAscendingOutlined />
             ) : (
               <SortDescendingOutlined />
@@ -244,7 +249,7 @@ const Accounts: React.FC = () => {
         >
           Contact No
           {sortColumn === "contactNo" ? (
-            sortOrder === "ascend" ? (
+            sortOrder === "asc" ? (
               <SortAscendingOutlined />
             ) : (
               <SortDescendingOutlined />
@@ -265,7 +270,7 @@ const Accounts: React.FC = () => {
         >
           City
           {sortColumn === "city" ? (
-            sortOrder === "ascend" ? (
+            sortOrder === "asc" ? (
               <SortAscendingOutlined />
             ) : (
               <SortDescendingOutlined />
@@ -278,68 +283,24 @@ const Accounts: React.FC = () => {
       dataIndex: "city",
       key: "city",
     },
+
     {
-      title: (
-        <div
-          onClick={() => handleSort("tso")}
-          className="flex items-center justify-between cursor-pointer"
-        >
-          TSO
-          {sortColumn === "tso" ? (
-            sortOrder === "ascend" ? (
-              <SortAscendingOutlined />
-            ) : (
-              <SortDescendingOutlined />
-            )
-          ) : (
-            <SortAscendingOutlined />
-          )}
-        </div>
-      ),
-      dataIndex: "tso",
-      key: "tso",
-    },
-    {
-      title: (
-        <div
-          onClick={() => handleSort("discount")}
-          className="flex items-center justify-between cursor-pointer"
-        >
-          Discount
-          {sortColumn === "discount" ? (
-            sortOrder === "ascend" ? (
-              <SortAscendingOutlined />
-            ) : (
-              <SortDescendingOutlined />
-            )
-          ) : (
-            <SortAscendingOutlined />
-          )}
-        </div>
-      ),
+      title: "Discount",
       dataIndex: "discount",
       key: "discount",
+      // render: (discount: any) => (discount ? discount.map().join(", ") : "N/A"),
     },
     {
-      title: (
-        <div
-          onClick={() => handleSort("accountType")}
-          className="flex items-center justify-between cursor-pointer"
-        >
-          Account Type
-          {sortColumn === "accountType" ? (
-            sortOrder === "ascend" ? (
-              <SortAscendingOutlined />
-            ) : (
-              <SortDescendingOutlined />
-            )
-          ) : (
-            <SortAscendingOutlined />
-          )}
-        </div>
-      ),
+      title: "Account Type",
       dataIndex: "accountType",
       key: "accountType",
+
+    },
+    {
+      title: "TSO",
+      dataIndex: "tso",
+      key: "tso",
+      // render: (tsos: any) => tsos || "N/A",
     },
     {
       title: "Is Active",
@@ -358,17 +319,25 @@ const Accounts: React.FC = () => {
     {
       title: "Actions",
       key: "actions",
-      render: (record: Product) => (
-        <Space className="">
+      render: (record: Account) => (
+        <Space>
           <span onClick={() => handleEdit(record)}>
-            <RiEditLine color="#00a8ec" size={18} className="hover:scale-125" />
+            <RiEditLine
+              color="#00a8ec"
+              size={18}
+              className="hover:scale-125 cursor-pointer"
+            />
           </span>
           <Popconfirm
-            title="Are you sure ?"
-            onConfirm={() => handleDelete(record.key)}
+            title="Are you sure to delete this account?"
+            onConfirm={() => handleDelete(record.id)}
           >
-            <span onClick={showDltModal}>
-              <FaTrash color={"red"} size={16} className="hover:scale-125" />
+            <span>
+              <FaTrash
+                color="red"
+                size={16}
+                className="hover:scale-125 cursor-pointer"
+              />
             </span>
           </Popconfirm>
         </Space>
@@ -376,6 +345,11 @@ const Accounts: React.FC = () => {
     },
   ];
   const navigate = useNavigate();
+  const handleCancel = () => {
+    form.resetFields();
+    setIsModalOpen(false);
+    setEditingKey(null);
+  };
 
   return (
     <div className="p-4 bg-gray-50 shadow-sm min-h-screen">
@@ -393,7 +367,7 @@ const Accounts: React.FC = () => {
         <h2 className="text-2xl font-bold">Account's</h2>
         <div className="md:flex md:space-y-0 space-y-4 items-center gap-2">
           <Search
-            placeholder="Search product"
+            placeholder="Search Account"
             onChange={(e) => setSearchTerm(e.target.value)}
             className="md:w-60 shadow-md bg-white rounded-md"
           />
@@ -409,13 +383,17 @@ const Accounts: React.FC = () => {
       <div className="overflow-auto  p-4 bg-white rounded-md shadow-md">
         <Table
           columns={columns}
-          dataSource={filteredData}
-          rowKey="key"
+          dataSource={Accounts}
+          rowKey="id"
+          loading={isFetching}
           pagination={{
             pageSize: 5,
             showTotal: (total) => `Total ${total} items`,
           }}
-          className="text-center items-center"
+          // onChange={(pagination, filters, sorter) => {
+          //   setSortColumn(sorter.field as string);
+          //   setSortOrder(sorter.order === "asc" ? "asc" : "desc");
+          // }}
         />
       </div>
       {/* Modal */}
@@ -445,7 +423,7 @@ const Accounts: React.FC = () => {
       >
         <Form form={form} layout="vertical">
           <Form.Item
-            name="accountName"
+            name="AccountName"
             label="Account Name"
             rules={[{ required: true }]}
           >
@@ -463,33 +441,86 @@ const Accounts: React.FC = () => {
           <Form.Item name="city" label="City">
             <Input placeholder="Enter City" className="shadow-md p-2" />
           </Form.Item>
-          <Form.Item name="tso" label="TSO">
-            <Input placeholder="Enter Name.." className="shadow-md p-2" />
+          {/* TSO Dropdown */}
+          <Form.Item name="tso" label="TSO"
+          rules={[{ required: true, message: "Please select an TSO!" }]}
+          
+          >
+          <Select
+              showSearch  
+              placeholder="Search and Select an TSO"
+              optionFilterProp="children"
+              loading={loading}
+              
+          >
+            {tsos.length > 0 ? (
+              tsos.map((item: any) => (
+                <Option key={item.id} value={item} >
+                  {item}
+                </Option>
+              ))
+            ) : (
+              <Option value="" disabled>
+                No options available
+              </Option>
+            )}
+          </Select>   
           </Form.Item>
-          <Form.Item name="discount" label="Discount">
-            <Select
-              placeholder="Select Discount"
-              className="shadow-md rounded-md h-10"
-            >
-              <Option value="Savings">10%</Option>
-              <Option value="Savings">12%</Option>
-              <Option value="Savings">15%</Option>
-            </Select>
+          {/* Discount Dropdown */}
+          <Form.Item name="discount" label="Discount"
+          rules={[{ required: true, message: "Please select an Discount!" }]}
+          >
+          <Select
+              showSearch   // Enable Search Functionality
+              placeholder="Search and Select an Discount"
+              optionFilterProp="children"
+              loading={loading}
+          >
+            {discountValues.length > 0 ? (
+              discountValues.map((item: any) => (
+                <Option key={item.id} value={item}>
+                  {item}
+                </Option>
+              ))
+            ) : (
+              <Option value="" disabled>
+                No options available
+              </Option>
+            )}
+          </Select>
           </Form.Item>
-          <Form.Item name="accountType" label="Account Type">
-            <Select
-              placeholder="Select Account Type"
-              className="shadow-md rounded-md h-10"
-            >
-              <Option value="Savings">Savings</Option>
-              <Option value="Current">Current</Option>
-            </Select>
-          </Form.Item>
+
+          {/* Account Type Dropdown */}
+       
+            <Form.Item
+          name="accountType"
+          label="Account Type"
+          rules={[{ required: true, message: "Please select an account type!" }]}
+        >
+          <Select
+              showSearch   // Enable Search Functionality
+              placeholder="Search and Select an account type"
+              optionFilterProp="children"
+              loading={loading}
+          >
+            {accountType.length > 0 ? (
+              accountType.map((item: any) => (
+                <Option key={item.id} value={item}>
+                  {item}
+                </Option>
+              ))
+            ) : (
+              <Option value="" disabled>
+                No options available
+              </Option>
+            )}
+          </Select>
+        </Form.Item>
           <Form.Item name="isActive" label="Is Active" valuePropName="checked">
             <Switch className="shadow-md" />
           </Form.Item>
         </Form>
-      </Modal>
+      </Modal>      
     </div>
   );
 };

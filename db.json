@@ -54,9 +54,35 @@
       "id": "0c4d",
       "SalesOfficer": "Abu bakr",
       "isActive": false
+    },
+    {
+      "id": "6830",
+      "SalesOfficer": "zain"
     }
   ],
-  "accounts": [],
+  "accounts": [
+    {
+      "id": "e19e",
+      "AccountName": "pir sarwar jeelani",
+      "businessName": "ABC",
+      "contactNo": "1235465485468",
+      "city": "Tay",
+      "tso": "Raju",
+      "discount": "23%",
+      "accountType": "Grower",
+      "isActive": true
+    },
+    {
+      "id": "2468",
+      "AccountName": "asfas",
+      "businessName": "dgd",
+      "contactNo": "ddg",
+      "city": "dgdg",
+      "tso": "Abu bakr",
+      "discount": "26%",
+      "accountType": "Sales"
+    }
+  ],
   "accountTypes": [
     {
       "id": "af8e",
@@ -88,6 +114,11 @@
     {
       "id": "bbf6",
       "discounts": "26%",
+      "isActive": true
+    },
+    {
+      "id": "10f7",
+      "discounts": "18%",
       "isActive": true
     }
   ]
