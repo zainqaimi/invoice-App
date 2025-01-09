@@ -35,6 +35,14 @@
       "packingType": "Current",
       "retailPrice": "976",
       "isActive": true
+    },
+    {
+      "id": "ab61",
+      "productName": "compot",
+      "weightType": "10kg",
+      "weightQuantity": "10",
+      "packingType": "Savings",
+      "retailPrice": "20000"
     }
   ],
   "users": [],
@@ -102,11 +110,6 @@
   ],
   "discounts": [
     {
-      "id": "9716",
-      "discounts": "23%",
-      "isActive": true
-    },
-    {
       "id": "1722",
       "discounts": "12%",
       "isActive": true
@@ -119,6 +122,11 @@
     {
       "id": "10f7",
       "discounts": "18%",
+      "isActive": true
+    },
+    {
+      "id": "49e0",
+      "discounts": "13%",
       "isActive": true
     }
   ]
