@@ -4,36 +4,9 @@
       "id": "81b1",
       "productName": "ABCDE",
       "weightType": "Savings",
-      "weightQuantity": "10 LITER",
+      "weightQuantity": "100",
       "packingType": "Current",
       "retailPrice": "4352",
-      "isActive": true
-    },
-    {
-      "id": "c47a",
-      "productName": "zayn",
-      "weightType": "12 litter",
-      "weightQuantity": "214",
-      "packingType": "Current",
-      "retailPrice": "976",
-      "isActive": true
-    },
-    {
-      "id": "4e85",
-      "productName": "zayni",
-      "weightType": "12 litter",
-      "weightQuantity": "214",
-      "packingType": "Current",
-      "retailPrice": "976",
-      "isActive": true
-    },
-    {
-      "id": "4909",
-      "productName": "zayn",
-      "weightType": "12 litter",
-      "weightQuantity": "214",
-      "packingType": "Current",
-      "retailPrice": "976",
       "isActive": true
     },
     {
@@ -43,6 +16,15 @@
       "weightQuantity": "10",
       "packingType": "Savings",
       "retailPrice": "20000"
+    },
+    {
+      "id": "8b3a",
+      "productName": "zayn",
+      "weightType": "12 litter",
+      "weightQuantity": "214",
+      "packingType": "Current",
+      "retailPrice": "200",
+      "isActive": true
     }
   ],
   "users": [],
